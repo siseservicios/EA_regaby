@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="address" name="Address Management" inherit_id="website_sale.address">
+
+        <xpath expr="//input[@name='field_required']" position="before">
+            <t t-if="mode[1] == 'billing'">
+                <t t-set="main_id_category_id" t-value="'main_id_category_id' in checkout and checkout['main_id_category_id']"/>
+                <t t-set="main_id_number" t-value="'main_id_number' in checkout and checkout['main_id_number']"/>
+                <t t-set="afip_responsability_type_id" t-value="'afip_responsability_type_id' in checkout and checkout['afip_responsability_type_id']"/>
+                <div class="clearfix"/>
+                <h3>Datos de Facturación</h3>
+                <!-- agregamos document type -->
+                <div t-attf-class="form-group #{error.get('main_id_category_id') and 'has-error' or ''} col-lg-3">
+                    <label class="control-label" for="main_id_category_id">Tipo de Documento</label>
+                    <t t-if="partner">
+                        <input name="commercial_partner_id" class="form-control" t-att-value="partner.commercial_partner_id.id"  />
+                    </t>
+                    <select  id="main_id_category_id" name="main_id_category_id" class="form-control">
+                            <option value="">Tipo de Documento...</option>
+                            <t t-foreach="document_categories or []" t-as="document_category">
+                                <option t-att-value="document_category.id" t-att-selected="document_category.id == (main_id_category_id and main_id_category_id or -1)">
+                                    <t t-esc="document_category.code"/>
+                                </option>
+                            </t>
+                        </select>
+                </div>
+                <!-- agregamos document number -->
+                <div t-attf-class="form-group #{error.get('main_id_number') and 'has-error' or ''} col-lg-3">
+                    <label class="control-label" for="main_id_number">Número de Documento</label>
+                    <input type="text" name="main_id_number" class="form-control" t-att-value="main_id_number" />
+                </div>
+                <!-- agregamos responsabilidad afiy type -->
+                <div t-attf-class="form-group #{error.get('afip_responsability_type_id') and 'has-error' or ''} col-lg-6">
+                    <label class="control-label" for="afip_responsability_type_id">Tipo de Responsabilidad AFIP</label>
+                    <select id="afip_responsability_type_id" name="afip_responsability_type_id" class="form-control">
+                            <option value="">Tipo de Responsabilidad AFIP...</option>
+                            <t t-foreach="afip_responsabilities or []" t-as="afip_type">
+                                <option t-att-value="afip_type.id" t-att-selected="afip_type.id == (afip_responsability_type_id and afip_responsability_type_id or -1)">
+                                    <t t-esc="afip_type.name"/>
+                                </option>
+                            </t>
+                    </select>
+                </div>
+                <div class="clearfix"/>
+            </t>
+        </xpath>
+
+        <!-- sacamos vat -->
+        <div t-attf-class="form-group #{error.get('vat') and 'has-error' or ''} col-md-6 div_vat" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </div>
+        
+    </template>
+
+</odoo>
