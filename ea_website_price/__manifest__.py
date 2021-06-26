@@ -8,6 +8,7 @@
     'author': 'Ing. Gabriela Rivero',
     'description': """Precio del website con iva para EA""",
     'data': [
+        'views/template.xml',
     ],
     'qweb': [],
     'demo': [],

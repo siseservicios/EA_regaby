@@ -46,6 +46,22 @@
             </t>
         </xpath>
 
+        <!--arg por default-->>
+        <xpath expr="//select[@name='country_id']" position="replace">
+            <select id="country_id" name="country_id" class="form-control" >
+                <option value="10">Argentina</option>
+                <t t-foreach="countries" t-as="c">
+                    <t t-if="c.id!=10">
+                        <option t-att-value="c.id" t-att-selected="c.id == 10">
+                            <t t-esc="c.name" />
+                        </option>
+                    </t>
+                </t>
+                
+            </select>
+        </xpath>
+
+
         <!-- sacamos vat -->
         <div t-attf-class="form-group #{error.get('vat') and 'has-error' or ''} col-md-6 div_vat" position="attributes">
             <attribute name="t-if">False</attribute>

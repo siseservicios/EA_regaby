@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="address" name="Address Management" inherit_id="website_sale.cart_lines">
+
+        <xpath expr="//td[@name='price']" position="replace">
+            <td class="text-center td-price" name="price">
+                <t t-if="(compute_currency(line.product_id.lst_price) - line.price_reduce ) &gt; 0.01  and website.get_current_pricelist().discount_policy=='without_discount'">
+                    <del t-attf-class="#{'text-danger mr8'}" style="white-space: nowrap;" t-esc="compute_currency(line.product_id.website_public_price)" t-options="{'widget': 'monetary', 'display_currency': website.get_current_pricelist().currency_id, 'from_currency': website.currency_id}"
+                    />
+                </t>
+                
+                <span t-field="line.product_id.website_price" 
+                style="white-space: nowrap;" 
+                t-options="{'widget': 'monetary', 'from_currency': website_sale_order.pricelist_id.currency_id, 'display_currency': website.currency_id}" 
+                groups="sale.group_show_price_subtotal" />
+                
+                <span t-field="line.price_reduce_taxinc" style="white-space: nowrap;" t-options="{'widget': 'monetary', 'from_currency': website_sale_order.pricelist_id.currency_id, 'display_currency': website.currency_id}" groups="sale.group_show_price_total" />
+            
+            </td>
+        </xpath>
+
+    </template>
+
+    <template id="payment" name="Address Management" inherit_id="website_sale.payment">
+
+        <xpath expr="//td[@class='text-center td-price']" position="replace">
+            <td class="text-center td-price">
+                <span t-field="line.product_id.website_price" style="white-space: nowrap;" t-options="{'widget': 'monetary', 'from_currency': website_sale_order.pricelist_id.currency_id, 'display_currency': website.currency_id}" groups="sale.group_show_price_subtotal" />
+                <span t-field="line.price_reduce_taxinc" style="white-space: nowrap;" t-options="{'widget': 'monetary', 'from_currency': website_sale_order.pricelist_id.currency_id, 'display_currency': website.currency_id}" groups="sale.group_show_price_total" />
+            </td>
+        </xpath>
+
+    </template>
+
+    <template id="confirmation" name="Address Management" inherit_id="website_sale.confirmation">
+
+        <xpath expr="//td[@class='td-price-total']" position="replace">
+            <td class="td-price-total">
+                <div class="text-right" t-field="line.price_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: order.pricelist_id.currency_id}" />
+            </td>
+        </xpath>
+
+    </template>
+
+</odoo>
