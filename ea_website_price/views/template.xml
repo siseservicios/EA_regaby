@@ -40,6 +40,8 @@
                 <div class="text-right" t-field="line.price_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: order.pricelist_id.currency_id}" />
             </td>
         </xpath>
+        <xpath expr="//th[@class='text-right td-price']" position="replace"/>
+        <xpath expr="//td[@class='td-price']" position="replace"/>
 
     </template>
 
