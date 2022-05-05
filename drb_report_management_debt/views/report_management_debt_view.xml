@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="drb_report_management_debt_tree" model="ir.ui.view">
+        <field name="name">drb.report.management.debt.tree</field>
+        <field name="model">drb.report.management.debt</field>
+        <field name="arch" type="xml">
+            <tree string="Drb Report Management Debt">
+                <field name="company_currency_id" invisible="1"/>
+                <field name="partner_id"/>
+                <field name="sale_order"/>
+                <field name="confirmation_date"/>
+                <field name="commitment_date"/>
+                <field name="amount_untaxed"/>
+                <field name="amount_total"/>
+                <field name="account_invoice"/>
+                <field name="invoice_amount_total"/>
+                <field name="residual"/>
+                <field name="payment"/>
+                <field name="payment_amount"/>
+                <field name="payment_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="drb_report_management_debt_form" model="ir.ui.view">
+        <field name="name">drb.report.management.debt.form</field>
+        <field name="model">drb.report.management.debt</field>
+        <field name="arch" type="xml">
+            <form class="o_sale_order">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="company_currency_id" invisible="1"/>
+                            <field name="partner_id" readonly="1"/>
+                        </h1>
+                    </div>
+                    
+                    <group name="sale order" string="Sale order">
+                        <group>
+                            <field name="sale_order"/>      
+                        </group>
+                        <group>
+                            <field name="amount_untaxed"/>
+                            <field name="amount_total"/>
+                            <field name="confirmation_date"/>
+                            <field name="commitment_date"/>  
+                        </group>
+                    </group>
+
+                    <group name="invoice" string="Invoice">
+                        <group>
+                            <field name="account_invoice"/>
+                        </group>
+                        <group>
+                            <field name="invoice_amount_total"/>
+                            <field name="residual"/>
+                        </group>
+                    </group>
+                
+                    <group name="payment" string="Payment">
+                        <group>
+                            <field name="payment"/>
+                        </group>
+                        <group>
+                            <field name="payment_amount"/>
+                            <field name="payment_date"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="drb_report_management_debt_search" model="ir.ui.view">
+        <field name="name">drb.report.management.debt.search</field>
+        <field name="model">drb.report.management.debt</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="0" string="Group By...">
+                    <filter name="partner_id" context="{'group_by': 'partner_id'}"/>
+                    <separator/>
+                    <filter name="sale_order" context="{'group_by': 'sale_order'}"/>
+                    <separator/>
+                    <filter name="account_invoice" context="{'group_by': 'account_invoice'}"/>
+                    <separator/>
+               </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_drb_report_management_debt" model="ir.actions.act_window">
+        <field name="name">Drb Report Management Debt</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">drb.report.management.debt</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+          </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_action_drb_report_management_debt"
+              action="action_drb_report_management_debt"
+              name="Report Management Debt"
+              parent="account.menu_finance_receivables"
+              sequence="1"/>
+
+</odoo>
