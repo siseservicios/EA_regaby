@@ -52,9 +52,13 @@ class DrbReportManagementDebt(models.Model):
         currency_field='company_currency_id',
         readonly=True,
     )
-    residual = fields.Monetary(
-        string='Residual Amount',
+    
+    balance_to_billed = fields.Monetary(
+        string='Balance to Billed',
+        computed='_compute_balance_to_billed',
         currency_field='company_currency_id',
+        default = 0,
+        store=True,
         readonly=True,
     )
 
@@ -65,7 +69,13 @@ class DrbReportManagementDebt(models.Model):
         readonly=True,
     )
     payment_amount = fields.Monetary(
-        string='Paynent Amount',
+        string='Payment Amount',
+        compute='_compute_payment_amount',
+        currency_field='company_currency_id',
+        readonly=True,
+    )
+    total_payment_amount = fields.Monetary(
+        string='Total Payment Amount',
         currency_field='company_currency_id',
         readonly=True,
     )
@@ -74,7 +84,23 @@ class DrbReportManagementDebt(models.Model):
         readonly=True,
     )
 
+    @api.depends('amount_untaxed','invoice_amount_total')
+    def _compute_balance_to_billed(self):
+        for rec in self:#Saldo por facturar: monto bruto - monto facttura
+            if rec.amount_untaxed and rec.invoice_amount_total:
+                rec.balance_to_billed = rec.amount_untaxed - rec.invoice_amount_total
+            else:
+                rec.balance_to_billed = 0
 
+    @api.depends('amount_untaxed')
+    def _compute_payment_amount(self):
+        for rec in self:#monto pago = monto bruto - sum(monto pago)
+            if rec.amount_untaxed:
+                rec.payment_amount = rec.amount_untaxed - rec.total_payment_amount
+            else:
+                rec.payment_amount = 0
+
+    
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self._cr, 'drb_report_management_debt')
@@ -92,7 +118,7 @@ class DrbReportManagementDebt(models.Model):
                     ai.amount_total as invoice_amount_total,
                     ai.residual as residual,
  					ap.id as payment_id,
- 					ap.amount as payment_amount,
+ 					ap.amount as total_payment_amount,
  					ap.payment_date as payment_date
                 FROM  sale_order as so
 				LEFT JOIN account_invoice as ai ON (ai.origin = so.name AND ai.state in ('open','paid') )
@@ -112,7 +138,7 @@ class DrbReportManagementDebt(models.Model):
                     null as invoice_amount_total,
                     null as  residual,
  					ap.id as payment_id,
- 					ap.amount as payment_amount,
+ 					ap.amount as total_payment_amount,
  					ap.payment_date as payment_date
                 from account_payment ap
 				join res_partner rp on (ap.partner_id = rp.id)

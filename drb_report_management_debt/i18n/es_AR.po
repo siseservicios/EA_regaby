@@ -84,10 +84,17 @@ msgstr "Factura"
 msgid "Invoice Amount Total"
 msgstr "Invoice Amount Total"
 
+
+#. module: drb_report_management_debt
+#: model:ir.model.fields,field_description:drb_report_management_debt.field_drb_report_management_debt_balance_to_billed
+msgid "Balance to Billed"
+msgstr "Saldo por Facturar"
+
+
 #. module: drb_report_management_debt
 #: model:ir.ui.view,arch_db:drb_report_management_debt.drb_report_management_debt_tree
-msgid "Invoice Residual"
-msgstr "Invoice Residual"
+msgid "Balance to Billed"
+msgstr "Saldo por Facturar"
 
 #. module: drb_report_management_debt
 #: model:ir.model.fields,field_description:drb_report_management_debt.field_drb_report_management_debt_invoice_amount_total
@@ -132,9 +139,13 @@ msgstr "Reporte Gestion Deuda"
 
 #. module: drb_report_management_debt
 #: model:ir.model.fields,field_description:drb_report_management_debt.field_drb_report_management_debt_payment_amount
-#: model:ir.model.fields,field_description:drb_report_management_debt.field_drb_report_management_debt_residual
-msgid "Paynent Amount"
-msgstr "Saldo por Facturar"
+msgid "Payment Amount"
+msgstr "Total Monto Pago"
+
+#. module: drb_report_management_debt
+#: model:ir.model.fields,field_description:drb_report_management_debt.field_drb_report_management_debt_total_payment_amount
+msgid "Total Payment Amount"
+msgstr "Total Monto Pago"
 
 #. module: drb_report_management_debt
 #: model:ir.model.fields,field_description:drb_report_management_debt.field_drb_report_management_debt_sale_order_id

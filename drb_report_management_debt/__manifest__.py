@@ -4,7 +4,7 @@
     'category': 'Base',
     'sequence': 11,
     'summary': ''' 
-    
+        This module creates a personalized debt report for the client.
     ''',
     'author': 'Romina Bazan',
     'license': 'AGPL-3',
