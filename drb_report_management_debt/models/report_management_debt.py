@@ -19,7 +19,8 @@ class DrbReportManagementDebt(models.Model):
     )
     sale_order = fields.Many2one(
         'sale.order',
-        string='Sale Order'
+        string='Sale Order',
+        readonly=True,
     )
     confirmation_date = fields.Datetime(
         string='Confirmation Date',
@@ -32,46 +33,54 @@ class DrbReportManagementDebt(models.Model):
     amount_untaxed = fields.Monetary(
         string='Amount Untaxed',
         currency_field='company_currency_id',
+        readonly=True,
     )
     amount_total = fields.Monetary(
         string='Amount Total',
         currency_field='company_currency_id',
+        readonly=True,
     )
-    
+
     #invoice
     account_invoice = fields.Many2one(
         'account.invoice',
-        string='Account Invoice'
+        string='Account Invoice',
+        readonly=True,
     )
     invoice_amount_total = fields.Monetary(
         string='Invoice Total Amount',
         currency_field='company_currency_id',
+        readonly=True,
     )
     residual = fields.Monetary(
         string='Residual Amount',
         currency_field='company_currency_id',
+        readonly=True,
     )
 
     #payment
     payment = fields.Many2one(
         'account.payment',
-        string='Payment'
+        string='Payment',
+        readonly=True,
     )
     payment_amount = fields.Monetary(
         string='Residual Amount',
         currency_field='company_currency_id',
+        readonly=True,
     )
     payment_date = fields.Date(
-        string='Date'
+        string='Date',
+        readonly=True,
     )
-    
+
 
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self._cr, 'drb_report_management_debt')
         self._cr.execute("""
             CREATE OR REPLACE VIEW drb_report_management_debt AS (
-                SELECT row_number() OVER () AS id,
+                (SELECT so.id id,
                     ai.currency_id as company_currency_id,
                     so.partner_id as partner_id,
                     so.id as sale_order,
@@ -84,11 +93,29 @@ class DrbReportManagementDebt(models.Model):
                     ai.residual as residual,
  					ap.id as payment,
  					ap.amount as payment_amount,
- 					ap.payment_date as payment_date			
+ 					ap.payment_date as payment_date
                 FROM  sale_order as so
 				LEFT JOIN account_invoice as ai ON (ai.origin = so.name AND ai.state in ('open','paid') )
- 				RIGHT JOIN account_move_line as aml ON (aml.invoice_id = ai.id and product_id > 0)
-  				LEFT JOIN account_payment as ap ON (so.partner_id = ap.partner_id AND ap.state in ('posted'))
- 				WHERE so.state in ('sale')
+ 				left join account_invoice_payment_rel inv_pay on (ai.id=inv_pay.invoice_id)
+				left join account_payment ap on (inv_pay.payment_id=ap.id)
+ 				WHERE so.state in ('sale'))
+                UNION
+                (select ap.id + 50000,
+                ap.currency_id as company_currency_id,
+                ap.partner_id as partner_id,
+                    null as sale_order,
+                    null as confirmation_date,
+                    null as commitment_date,
+                    null as amount_untaxed,
+                    null as amount_total,
+                    null as account_invoice,
+                    null as invoice_amount_total,
+                    null as  residual,
+ 					ap.id as payment,
+ 					ap.amount as payment_amount,
+ 					ap.payment_date as payment_date
+                from account_payment ap
+				join res_partner rp on (ap.partner_id = rp.id)
+				where ap.id not in (select payment_id from account_invoice_payment_rel))
             )"""
         )

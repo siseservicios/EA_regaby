@@ -10,13 +10,13 @@
                 <field name="sale_order"/>
                 <field name="confirmation_date"/>
                 <field name="commitment_date"/>
-                <field name="amount_untaxed"/>
-                <field name="amount_total"/>
+                <field name="amount_untaxed" sum="Amount Untaxed"/>
+                <field name="amount_total" sum="Amount Total"/>
                 <field name="account_invoice"/>
-                <field name="invoice_amount_total"/>
-                <field name="residual"/>
+                <field name="invoice_amount_total" sum="Invoice Amount Total"/>
+                <field name="residual" sum="Invoice Residual"/>
                 <field name="payment"/>
-                <field name="payment_amount"/>
+                <field name="payment_amount" sum="Payment Amount Total"/>
                 <field name="payment_date"/>
             </tree>
         </field>
@@ -34,16 +34,16 @@
                             <field name="partner_id" readonly="1"/>
                         </h1>
                     </div>
-                    
+
                     <group name="sale order" string="Sale order">
                         <group>
-                            <field name="sale_order"/>      
+                            <field name="sale_order"/>
                         </group>
                         <group>
                             <field name="amount_untaxed"/>
                             <field name="amount_total"/>
                             <field name="confirmation_date"/>
-                            <field name="commitment_date"/>  
+                            <field name="commitment_date"/>
                         </group>
                     </group>
 
@@ -56,7 +56,7 @@
                             <field name="residual"/>
                         </group>
                     </group>
-                
+
                     <group name="payment" string="Payment">
                         <group>
                             <field name="payment"/>
@@ -76,6 +76,7 @@
         <field name="model">drb.report.management.debt</field>
         <field name="arch" type="xml">
             <search>
+                <field name="partner_id" />
                 <group expand="0" string="Group By...">
                     <filter name="partner_id" context="{'group_by': 'partner_id'}"/>
                     <separator/>
