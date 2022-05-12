@@ -17,7 +17,7 @@ class DrbReportManagementDebt(models.Model):
         string='Partner',
         readonly=True
     )
-    sale_order = fields.Many2one(
+    sale_order_id = fields.Many2one(
         'sale.order',
         string='Sale Order',
         readonly=True,
@@ -42,7 +42,7 @@ class DrbReportManagementDebt(models.Model):
     )
 
     #invoice
-    account_invoice = fields.Many2one(
+    invoice_id = fields.Many2one(
         'account.invoice',
         string='Account Invoice',
         readonly=True,
@@ -59,13 +59,13 @@ class DrbReportManagementDebt(models.Model):
     )
 
     #payment
-    payment = fields.Many2one(
+    payment_id = fields.Many2one(
         'account.payment',
         string='Payment',
         readonly=True,
     )
     payment_amount = fields.Monetary(
-        string='Residual Amount',
+        string='Paynent Amount',
         currency_field='company_currency_id',
         readonly=True,
     )
@@ -83,15 +83,15 @@ class DrbReportManagementDebt(models.Model):
                 (SELECT so.id id,
                     ai.currency_id as company_currency_id,
                     so.partner_id as partner_id,
-                    so.id as sale_order,
+                    so.id as sale_order_id,
                     so.confirmation_date,
                     so.commitment_date,
                     so.amount_untaxed,
                     so.amount_total,
-                    ai.id as account_invoice,
+                    ai.id as invoice_id,
                     ai.amount_total as invoice_amount_total,
                     ai.residual as residual,
- 					ap.id as payment,
+ 					ap.id as payment_id,
  					ap.amount as payment_amount,
  					ap.payment_date as payment_date
                 FROM  sale_order as so
@@ -103,15 +103,15 @@ class DrbReportManagementDebt(models.Model):
                 (select ap.id + 50000,
                 ap.currency_id as company_currency_id,
                 ap.partner_id as partner_id,
-                    null as sale_order,
+                    null as sale_order_id,
                     null as confirmation_date,
                     null as commitment_date,
                     null as amount_untaxed,
                     null as amount_total,
-                    null as account_invoice,
+                    null as invoice_id,
                     null as invoice_amount_total,
                     null as  residual,
- 					ap.id as payment,
+ 					ap.id as payment_id,
  					ap.amount as payment_amount,
  					ap.payment_date as payment_date
                 from account_payment ap
