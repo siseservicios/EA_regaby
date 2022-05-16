@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from odoo import models, fields, api
 from odoo import tools
 
@@ -55,7 +54,6 @@ class DrbReportManagementDebt(models.Model):
     
     balance_to_billed = fields.Monetary(
         string='Balance to Billed',
-        computed='_compute_balance_to_billed',
         currency_field='company_currency_id',
         default = 0,
         store=True,
@@ -70,7 +68,6 @@ class DrbReportManagementDebt(models.Model):
     )
     payment_amount = fields.Monetary(
         string='Payment Amount',
-        compute='_compute_payment_amount',
         currency_field='company_currency_id',
         readonly=True,
     )
@@ -83,23 +80,6 @@ class DrbReportManagementDebt(models.Model):
         string='Date',
         readonly=True,
     )
-
-    @api.depends('amount_untaxed','invoice_amount_total')
-    def _compute_balance_to_billed(self):
-        for rec in self:#Saldo por facturar: monto bruto - monto facttura
-            if rec.amount_untaxed and rec.invoice_amount_total:
-                rec.balance_to_billed = rec.amount_untaxed - rec.invoice_amount_total
-            else:
-                rec.balance_to_billed = 0
-
-    @api.depends('amount_untaxed')
-    def _compute_payment_amount(self):
-        for rec in self:#monto pago = monto bruto - sum(monto pago)
-            if rec.amount_untaxed:
-                rec.payment_amount = rec.amount_untaxed - rec.total_payment_amount
-            else:
-                rec.payment_amount = 0
-
     
     @api.model_cr
     def init(self):
@@ -112,13 +92,15 @@ class DrbReportManagementDebt(models.Model):
                     so.id as sale_order_id,
                     so.confirmation_date,
                     so.commitment_date,
-                    so.amount_untaxed,
+                    so.amount_untaxed as amount_untaxed,
                     so.amount_total,
                     ai.id as invoice_id,
                     ai.amount_total as invoice_amount_total,
+                    (so.amount_untaxed - ai.amount_total) as balance_to_billed,
                     ai.residual as residual,
  					ap.id as payment_id,
- 					ap.amount as total_payment_amount,
+ 					ap.amount as payment_amount,
+                    (so.amount_untaxed - ap.amount) as total_payment_amount, 
  					ap.payment_date as payment_date
                 FROM  sale_order as so
 				LEFT JOIN account_invoice as ai ON (ai.origin = so.name AND ai.state in ('open','paid') )
@@ -136,9 +118,11 @@ class DrbReportManagementDebt(models.Model):
                     null as amount_total,
                     null as invoice_id,
                     null as invoice_amount_total,
+                    null as balance_to_billed,
                     null as  residual,
  					ap.id as payment_id,
- 					ap.amount as total_payment_amount,
+ 					ap.amount as payment_amount, 
+ 					null as total_payment_amount,
  					ap.payment_date as payment_date
                 from account_payment ap
 				join res_partner rp on (ap.partner_id = rp.id)

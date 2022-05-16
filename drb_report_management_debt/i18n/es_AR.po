@@ -140,12 +140,12 @@ msgstr "Reporte Gestion Deuda"
 #. module: drb_report_management_debt
 #: model:ir.model.fields,field_description:drb_report_management_debt.field_drb_report_management_debt_payment_amount
 msgid "Payment Amount"
-msgstr "Total Monto Pago"
+msgstr "Monto Pago"
 
 #. module: drb_report_management_debt
 #: model:ir.model.fields,field_description:drb_report_management_debt.field_drb_report_management_debt_total_payment_amount
 msgid "Total Payment Amount"
-msgstr "Total Monto Pago"
+msgstr "Saldo por pagar"
 
 #. module: drb_report_management_debt
 #: model:ir.model.fields,field_description:drb_report_management_debt.field_drb_report_management_debt_sale_order_id
