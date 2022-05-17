@@ -96,11 +96,11 @@ class DrbReportManagementDebt(models.Model):
                     so.amount_total,
                     ai.id as invoice_id,
                     ai.amount_total as invoice_amount_total,
-                    (so.amount_untaxed - ai.amount_total) as balance_to_billed,
+                    (so.amount_total - ai.amount_total) as balance_to_billed,
                     ai.residual as residual,
  					ap.id as payment_id,
  					ap.amount as payment_amount,
-                    (so.amount_untaxed - ap.amount) as total_payment_amount, 
+                    (so.amount_total - ap.amount) as total_payment_amount, 
  					ap.payment_date as payment_date
                 FROM  sale_order as so
 				LEFT JOIN account_invoice as ai ON (ai.origin = so.name AND ai.state in ('open','paid') )
