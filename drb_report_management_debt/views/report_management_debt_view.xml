@@ -4,7 +4,7 @@
         <field name="name">drb.report.management.debt.tree</field>
         <field name="model">drb.report.management.debt</field>
         <field name="arch" type="xml">
-            <tree string="Drb Report Management Debt">
+            <tree string="Drb Report Management Debt" create="false" edit="false" >
                 <field name="company_currency_id" invisible="1"/>
                 <field name="partner_id"/>
                 <field name="sale_order_id"/>
@@ -27,7 +27,7 @@
         <field name="name">drb.report.management.debt.form</field>
         <field name="model">drb.report.management.debt</field>
         <field name="arch" type="xml">
-            <form class="o_sale_order">
+            <form class="o_sale_order" create="false" edit="false" >
                 <sheet>
                     <div class="oe_title">
                         <h1>
@@ -81,7 +81,7 @@
                 <field name="partner_id" />
                 <field name="invoice_id" />
                 <field name="payment_id" />
-                
+
                 <group expand="0" string="Group By...">
                     <filter string="Partners" name="group_partner_id" context="{'group_by': 'partner_id'}"/>
                     <separator/>
