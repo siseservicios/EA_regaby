@@ -81,12 +81,35 @@ class DrbReportManagementDebt(models.Model):
         readonly=True,
     )
 
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None,
+                   orderby=False, lazy=True):
+        """Quito campos para que no se muestren sumarizados en el group by
+        """
+        if 'amount_untaxed' in fields:
+            fields.remove('amount_untaxed')
+        if 'amount_total' in fields:
+            fields.remove('amount_total')
+        if 'invoice_amount_total' in fields:
+            fields.remove('invoice_amount_total')
+        if 'balance_to_billed' in fields:
+            fields.remove('balance_to_billed')
+        if 'payment_amount' in fields:
+            fields.remove('payment_amount')
+        if 'total_payment_amount' in fields:
+            fields.remove('total_payment_amount')
+        return super(DrbReportManagementDebt, self).read_group(
+            domain, fields, groupby, offset=offset, limit=limit,
+            orderby=orderby, lazy=lazy,
+        )
+
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self._cr, 'drb_report_management_debt')
         self._cr.execute("""
             CREATE OR REPLACE VIEW drb_report_management_debt AS (
-                (SELECT coalesce(so.partner_id,0)+coalesce(so.id, 0)+coalesce(ai.id, 0)+coalesce(ap.id,0) id,
+                (SELECT
+                    coalesce(so.partner_id,0)+coalesce(so.id, 0)+coalesce(ai.id, 0)+coalesce(ap.id,0)+so.amount_total id,
                     ai.currency_id as company_currency_id,
                     so.partner_id as partner_id,
                     so.id as sale_order_id,
@@ -96,11 +119,16 @@ class DrbReportManagementDebt(models.Model):
                     so.amount_total,
                     ai.id as invoice_id,
                     ai.amount_total as invoice_amount_total,
-                    (so.amount_total - ai.amount_total) as balance_to_billed,
+                    (so.amount_total -
+                        (select sum(amount_total) from account_invoice ai where origin=so.name)) as balance_to_billed,
                     ai.residual as residual,
  					ap.id as payment_id,
  					ap.amount as payment_amount,
-                    (so.amount_total - ap.amount) as total_payment_amount,
+                    (ai.amount_total -
+					     (select sum(amount) from account_payment apx join account_invoice_payment_rel aipx
+						  on (apx.id=aipx.payment_id)
+					      where aipx.invoice_id = ai.id)
+					) as total_payment_amount,
  					ap.payment_date as payment_date
                 FROM  sale_order as so
 				LEFT JOIN account_invoice as ai ON (ai.origin = so.name AND ai.state in ('open','paid') )
@@ -108,7 +136,7 @@ class DrbReportManagementDebt(models.Model):
 				left join account_payment ap on (inv_pay.payment_id=ap.id)
  				WHERE so.state in ('sale'))
                 UNION
-                (select coalesce(ap.partner_id) + coalesce(ap.id) + 50000,
+                (select coalesce(ap.partner_id) + coalesce(ap.id) + 50000 + ap.amount id,
                 ap.currency_id as company_currency_id,
                 ap.partner_id as partner_id,
                     null as sale_order_id,
